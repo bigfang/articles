@@ -444,7 +444,7 @@ HelloModule.Utils.priv
 「Learn You Some Erlang」书中的[这一章][syntax-func]提供了Erlang中模式匹配和函数语法的详细描述。
 在这里我们将简要介绍主要内容并提供一些Erlang和Elixir的示例代码。
 
-[syntax-func]: (http://learnyousomeerlang.com/syntax-in-functions)
+[syntax-func]: http://learnyousomeerlang.com/syntax-in-functions
 
 ### 5.1 模式匹配
 Elixir中的模式匹配基于于Erlang实现，两者通常非常类似：
@@ -804,8 +804,8 @@ Elixir的结构与Erlang的OTP类似，被分为不同的应用放在`lib`目录
 
 这样就能直接从Erlang调用Elixir代码了，如果还需要编写Elixir代码，还应安装[自动编译Elixir的rebar插件][plugin]
 
-[repo]: (https://github.com/elixir-lang/elixir)
-[plugin]: (https://github.com/yrashk/rebar_elixir_plugin)
+[repo]: https://github.com/elixir-lang/elixir
+[plugin]: https://github.com/yrashk/rebar_elixir_plugin
 
 ### 7.2 手动集成
 
@@ -819,7 +819,7 @@ Erlang的官方文档网站有不错的编程[示例集][examples]，将它们�
 Elixir还提供[入门指南][guide]和[在线文档][doc]。
 
 
-[examples]: (http://www.erlang.org/doc/programming_examples/users_guide.html)
-[cookbook]: (http://schemecookbook.org/Erlang/TOC)
-[guide]: (http://elixir-lang.org/getting-started/introduction.html)
-[doc]: (http://elixir-lang.org/docs.html)
+[examples]: http://www.erlang.org/doc/programming_examples/users_guide.html
+[cookbook]: http://schemecookbook.org/Erlang/TOC
+[guide]: http://elixir-lang.org/getting-started/introduction.html
+[doc]: http://elixir-lang.org/docs.html
