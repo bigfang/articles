@@ -442,7 +442,7 @@ HelloModule.Utils.priv
 
 ## 5 函数语法
 「Learn You Some Erlang」书中的[这一章][syntax-func]提供了Erlang中模式匹配和函数语法的详细描述。
-在这里我们将简要介绍主要内容并提供一些Erlang和Elixir的示例代码。
+而在本文中我们只简要介绍主要内容并提供一些Erlang和Elixir的示例代码。
 
 [syntax-func]: http://learnyousomeerlang.com/syntax-in-functions
 
@@ -472,7 +472,7 @@ end
 ```
 
 当多次定义名称相同的函数时，每个这样的定义称为**子句** 。
-在Erlang中，子句总是并排排列并有用分号`;`分隔 。 最后一个子句用点号`.`结束。
+在Erlang中，子句总是并排排列并使用分号`;`分隔 。 最后一个子句用点号`.`结束。
 
 Elixir不需要通过符号来分隔子句，但它们必须排在一起
 
@@ -733,8 +733,8 @@ test_fun.(10)
 
 Elixir的`cond`和Erlang的`if`有两个重要的区别：
 
-1) `cond`允许任意表达式在左侧，而Erlang只允许Guard子句；
-2) `cond`使用Elixir中真值的概念（除了`nil`和`false`皆为真值），而Erlang的`if`则严格的期望一个布尔值；
+  * `cond`允许任意表达式在左侧，而Erlang只允许Guard子句；
+  * `cond`利用Elixir中真值的概念（除了`nil`和`false`皆为真值），而Erlang的`if`则严格的期望一个布尔值；
 
 Elixir同样提供了一个类似于命令式语言的`if`函数，用于检查一个子句是true还是false：
 ```elixir
