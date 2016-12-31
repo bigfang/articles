@@ -1,2 +1,1 @@
-# articles
-翻译的文章
+### [Erlang/Elixir语法速成](crash-course.md)
