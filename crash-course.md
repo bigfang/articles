@@ -275,8 +275,8 @@ is_binary <<"Hello">>    #=> true
 ```
 
 Elixir中，**字符串**意味着一个UTF-8编码的二进制串，`String`模块可用于处理字符串。
-Elixir同时希望源码也采用UTF-8编码。而在Erlang中，**字符串**表示字符的列表，
-`:string`模块用于处理它们，但并没有采用UTF-8编码，并且主要用于处理字符列表。
+同时Elixir也希望程序源码采用UTF-8编码。而在Erlang中，**字符串**表示字符的列表，
+`:string`模块用于处理它们，但并没有采用UTF-8编码。
 
 Elixir还支持多行字符串（也被称为*heredocs*）：
 ```elixir
