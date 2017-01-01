@@ -1,48 +1,49 @@
 
 ### 原文：[Erlang/Elixir Syntax: A Crash Course](http://elixir-lang.org/crash-course.html)
 
+
 # Erlang/Elixir语法速成
-
 本文是针对Erlang开发人员的Elixir语法简介，同时也适用于试图了解Erlang的Elixir开发者。
-本文包含了理解Elixir/Erlang代码，支持互操作性，阅读文档和示例代码等所需要的最基本的知识。
+本文简要介绍了Elixir/Erlang语法，互操作能力，在线文档和示例代码等最基础的知识。
 
-1. [运行代码](#1)
+1. [运行代码](#1-运行代码)
     1. [Erlang](#11-erlang)
     2. [Elixir](#12-elixir)
-2. [显著差异](#2)
+2. [显著差异](#2-显著差异)
     1. [操作符名称](#21-操作符名称)
     2. [分隔符](#22-分隔符)
     3. [变量名](#23-变量名)
     4. [函数调用](#24-函数调用)
-3. [数据类型](#3)
+3. [数据类型](#3-数据类型)
     1. [原子](#31-原子)
     2. [元组](#32-元组)
     3. [列表与二进制串](#33-列表与二进制串)
     4. [键值列表](#-34键值列表)
     5. [映射(Map)](#35-映射(Map))
     6. [正则表达式](#36-正则表达式)
-4. [模块](#4)
-5. [函数语法](#5)
+4. [模块](#4-模块)
+5. [函数语法](#5-函数语法)
     1. [模式匹配](#51-模式匹配)
     2. [函数识别](#52-函数识别)
     3. [默认值](#53-默认值)
     4. [匿名函数](#54-匿名函数)
     5. [作为一等公民的函数](#55-作为一等公民的函数)
     6. [Elixir中的局部应用与函数捕捉](#56-Elixir中的局部应用与函数捕捉)
-6. [流程控制](#6)
+6. [流程控制](#6-流程控制)
     1. [Case](#61-case)
     2. [If](#62-if)
     3. [发送和接收消息](#63-发送和接收消息)
-7. [将Elixir添加到已有的Erlang程序中](#7)
+7. [将Elixir添加到已有的Erlang程序中](#7-将Elixir添加到已有的Erlang程序中)
     1. [使用Rebar集成](#71-使用Rebar集成)
     2. [手动集成](#72-手动集成)
-8. [进阶](#8)
+8. [扩展阅读](#8-扩展阅读)
 
 
 ## 1 运行代码
 ### 1.1 Erlang
 最快速运行代码的方法是启动Erlang shell - `erl`。本文中大部分代码可以直接粘贴到shell中，
-但是当定义一个命名函数时，Erlang则希望它在一个模块中，而且模块必须要被编译才能使用。下面是一个模块的例子：
+Erlang中的命名函数必须包含在模块中，而且必须要在模块编译后才能使用。下面是一个模块的例子：
+
 ```erlang
 % module_name.erl
 -module(module_name).  % you may use some other name
@@ -68,7 +69,8 @@ shell运行的同时也可以编辑文件。 但不要忘记执行`c(module_name
 
 ### 1.2 Elixir
 与Erlang类似，Elixir有一个名为`iex`的交互式shell。编译Elixir代码可以使用`elixirc`（类似于Erlang的`erlc`）。
-Elixir还提供一个名为`elixir`的可执行命令来运行Elixir代码。上面的模块用Elixir来写就是这样：
+Elixir还提供一个名为`elixir`的可执行文件来运行Elixir代码。上面的模块用Elixir来写就是这样：
+
 ```elixir
 # module_name.ex
 defmodule ModuleName do
@@ -89,7 +91,7 @@ Hello world!
 :ok
 ```
 
-不过要注意的是，在Elixir中，模块并强制要求保存在文件中，Elixir的模块可以直接在shell中定义：
+要注意的是，在Elixir中，不要求模块必须保存在文件中，Elixir的模块可以直接在shell中定义：
 
 ```elixir
 defmodule MyModule do
@@ -176,17 +178,23 @@ Elixir允许在函数调用中省略括号，而Erlang不允许。
 | sum(A, B)        | sum a, b      |
 
 调用模块中的函数的语法不同，Erlang中，下面的代码
+
 ```erlang
  lists : last ([ 1 , 2 ]).
 ```
+
 表示从`list`模块中调用函数`last`，而在Elixir中，使用点号`.`代替冒号`:`
+
 ```elixir
 List.last([1, 2])
 ```
-**注意** 由于Erlang的模块用原子表示，因此您可以用如下方法在Elixir中调用Erlang的函数：
+
+**注意** 在Elixir中，由于Erlang的模块用原子表示，因此用如下方法调用Erlang的函数：
+
 ```elixir
 :lists.sort [3, 2, 1]
 ```
+
 所有Erlang的内置函数都包含在`:erlang`模块中
 
 ## 3 数据类型
@@ -217,7 +225,7 @@ x = 10
 Module  # 称为原子别名; 展开后是 :'Elixir.Module'
 ```
 
-非小写字母开头的字符也可以作为原子。 不过两种语言的语法有所不同：
+非小写字母开头的标识符也可以作为原子。 不过两种语言的语法有所不同：
 
 **Erlang**
 ```erlang
@@ -240,7 +248,7 @@ is_atom :""                 #=> true
 两种语言元组的语法是相同的，不过API有所不同，Elixir尝试使用下面的方法规范化Erlang库：
 
 1. 函数的`subject`总是作为第一个参数。
-2. 所有操作数据结构的函数均从零开始访问。
+2. 所有对数据结构的操作均基于零进行。
 
 也就是说，Elixir不会导入默认的`element`和`setelement`函数，而是提供`elem`和`put_elem`作为替代：
 
@@ -289,7 +297,7 @@ lines.
 ```
 
 ### 3.4 键值列表（Keyword list）
-Elixir中，如果列表由具有两个元素的元组组成，并且每个元组中的第一个元素是原子，则称这样的列表为键值列表：
+Elixir中，如果列表是由具有两个元素的元组组成，并且每个元组中的第一个元素是原子，则称这样的列表为键值列表：
 
 **Erlang**
 ```erlang
@@ -306,8 +314,8 @@ kw[:another_key]
 ```
 
 ### 3.5 映射（Map）
-Erlang R17中引入了映射，一种无序的键-值数据结构。键和值可以是任意数据类型，
-对映射的创建、更新和模式匹配如下所示：
+Erlang R17中引入了映射，一种无序的键-值数据结构。键和值可以是任意的数据类型，
+映射的创建、更新和模式匹配如下所示：
 
 **Erlang**
 ```erlang
@@ -327,7 +335,7 @@ value === 1
 #=> true
 ```
 
-当键为原子时，Elixir允许使用`key: 0`来定义映射和`.key`来访问值：
+当键为原子时，Elixir可以使用`key: 0`来定义映射，使用`.key`来访问值：
 
 ```elixir
 map = %{key: 0}
@@ -336,8 +344,8 @@ map.key === 1
 ```
 
 ### 3.6 正则表达式
-Elixir支持正则表达式语法，允许在（elixir源码）编译时编译正则表达式，
-而不需要等到运行时再进行编译。而且对于特殊的字符，也无需进行多次转义：
+Elixir支持正则表达式语法，允许在编译（elixir源码）时编译正则表达式，
+而不是等到运行时再进行编译。而且对于特殊的字符，也无需进行多次转义：
 
 **Erlang**
 ```erlang
@@ -352,7 +360,7 @@ Regex.run ~r/abc\s/, "abc "
 #=> ["abc "]
 ```
 
-支持在*heredocs*中书写正则，这使得理解复杂正则时更加方便
+支持在*heredocs*中书写正则，这样便于理解复杂正则
 
 **Elixir**
 ```elixir
@@ -365,7 +373,8 @@ lines.
 ```
 
 ## 4 模块
-每个Erlang模块都存在同名文件中，具有以下结构：
+每个Erlang模块都保存在与其同名的文件中，具有以下结构：
+
 ```erlang
 -module(hello_module).
 -export([some_fun/0, some_fun/1]).
@@ -384,10 +393,10 @@ priv() ->
 ```
 
 在这里，我们创建了一个名为`hello_module`的模块。模块中定义了三个函数，
-顶部的`export`指令导出了前两个函数，使得它们能够被其他模块调用。`export`指令里包含了需要导出函数的列表，
-其中每个函数都写作`<函数名>/<元数>`的形式。这里，元数是函数参数的个数。
+顶部的`export`指令导出了前两个函数，让它们能够被其他模块调用。`export`指令里包含了需要导出函数的列表，
+其中每个函数都写作`<函数名>/<元数>`的形式。在这里，元数是函数参数的个数。
 
-和上述Erlang作用相同的Elixir代码：
+和上述Erlang代码作用相同的Elixir代码：
 
 ```elixir
 defmodule HelloModule do
@@ -408,7 +417,7 @@ defmodule HelloModule do
 end
 ```
 
-在Elixir中，还可以在一个文件中包含多个模块，并且可以嵌套模块：
+在Elixir中，一个文件中可以包含多个模块，并且还允许嵌套定义模块：
 
 ```elixir
 defmodule HelloModule do
@@ -441,8 +450,8 @@ HelloModule.Utils.priv
 ```
 
 ## 5 函数语法
-「Learn You Some Erlang」书中的[这一章][syntax-func]提供了Erlang中模式匹配和函数语法的详细描述。
-而在本文中我们只简要介绍主要内容并提供一些Erlang和Elixir的示例代码。
+「Learn You Some Erlang」书中的[这一章][syntax-func]详细讲解了Erlang的模式匹配和函数语法。
+而本文只简要介绍主要内容并展示部分示例代码。
 
 [syntax-func]: http://learnyousomeerlang.com/syntax-in-functions
 
@@ -472,13 +481,13 @@ end
 ```
 
 当多次定义名称相同的函数时，每个这样的定义称为**子句** 。
-在Erlang中，子句总是并排排列并使用分号`;`分隔 。 最后一个子句用点号`.`结束。
+在Erlang中，子句总是按顺序写在一起并使用分号`;`分隔 。 最后一个子句用点号`.`结束。
 
-Elixir不需要通过符号来分隔子句，但它们必须排在一起
+Elixir不需要通过符号来分隔子句，不过要求子句必须按顺序写在一起。
 
 ### 5.2 函数识别
-在Erlang和Elixir中，仅凭函数名无法识别一个函数。必须通过函数名和*arity*（元）。
-下面两个例子中，我们定义了四个不同的函数（所有名字都为`sum`，但具有不同的元）：
+在Erlang和Elixir中，仅凭函数名是无法区分一个函数的。必须通过函数名和*arity*（元/参数）。
+下面两个例子中，我们定义了四个不同的函数（所有名字都为`sum`，但它们具有不同的元）：
 
 **Erlang**
 ```erlang
@@ -544,7 +553,7 @@ sum "a", "b"
 ```
 
 ### 5.3 默认值
-Elixir允许参数具有默认值，而Erlang则不允许。
+Elixir允许参数具有默认值，而Erlang不允许。
 ```elixir
 def mul_by(x, n \\ 2) do
   x * n
@@ -555,7 +564,7 @@ mul_by 4    #=> 8
 ```
 
 ### 5.4 匿名函数
-匿名函数按如下方式定义：
+定义匿名函数：
 
 ```erlang
 Sum = fun(A, B) -> A + B end.
@@ -577,7 +586,7 @@ Enum.map [1, 2, 3, 4], square
 #=> [1, 4, 9, 16]
 ```
 
-在定义匿名函数时也可以使用模式匹配。
+定义匿名函数时也可以使用模式匹配。
 
 ```erlang
 F = fun(Tuple = {a, b}) ->
@@ -609,7 +618,7 @@ f.({:a, :b})
 ```
 
 ### 5.5 作为一等公民（first-class）的函数
-匿名函数作为*first-class values*，因此它们可以当作参数传递给其他函数，也可以被当作返回值。
+匿名函数是*first-class values*，因此它们可以当作参数传递给其他函数，也可以被当作返回值。
 对于命名函数，可以使用如下语法实现上述功能。
 
 ```erlang
@@ -634,7 +643,7 @@ Enum.map [1, 2, 3], &Math.square/1
 ```
 
 ### 5.6 Elixir中的局部应用与函数捕捉
-Elixir支持函数的局部应用（partial application），以简洁的方式定义匿名函数：
+Elixir可以利用函数的局部应用（partial application），以简洁的方式定义匿名函数：
 ```elixir
 Enum.map [1, 2, 3, 4], &(&1 * 2)
 #=> [2, 4, 6, 8]
@@ -644,6 +653,7 @@ List.foldl [1, 2, 3, 4], 0, &(&1 + &2)
 ```
 
 函数捕捉同样使用`&`操作符，它使得命名函数可以作为参数传递。
+
 ```elixir
 defmodule Math do
   def square(x) do
@@ -657,10 +667,10 @@ Enum.map [1, 2, 3], &Math.square/1
 上面的代码相当于Erlang的`fun math:square/1` 。
 
 ## 6. 流程控制
-实际上，`if`和`case`结构在Erlang和Elixir中是表达式，不过依然可以像命令式语言一样，用于流程控制
+`if`和`case`结构在Erlang和Elixir中实际上是表达式，不过依然可以像命令式语言的语句那样，用于流程控制
 
 ### 6.1 Case
-`case`结构提供一个完全基于模式匹配的控制流。
+`case`结构是完全基于模式匹配的流程控制。
 
 **Erlang**
 ```erlang
@@ -733,10 +743,11 @@ test_fun.(10)
 
 Elixir的`cond`和Erlang的`if`有两个重要的区别：
 
-  * `cond`允许任意表达式在左侧，而Erlang只允许Guard子句；
-  * `cond`利用Elixir中真值的概念（除了`nil`和`false`皆为真值），而Erlang的`if`则严格的期望一个布尔值；
+  * `cond`允许左侧为任意表达式，而Erlang只允许Guard子句；
+  * `cond`使用Elixir中的真值概念（除了`nil`和`false`皆为真值），而Erlang的`if`则严格的期望一个布尔值；
 
 Elixir同样提供了一个类似于命令式语言的`if`函数，用于检查一个子句是true还是false：
+
 ```elixir
 if x > 10 do
   :greater_than_ten
@@ -746,7 +757,7 @@ end
 ```
 
 ### 6.3 发送和接收消息
-发送和接收消息的语法仅仅略有不同：
+发送和接收消息的语法仅略有不同：
 
 ```erlang
 Pid = self().
@@ -775,10 +786,9 @@ end
 ```
 
 ## 7 将Elixir添加到已有的Erlang程序中
-Elixir会编译成BEAM字节码（通过Erlang抽象格式）。
-这意味着Elixir和Erlang的代码可以互相调用而不需要添加任何绑定。
-所有Elixir模块都以`Elixir.`作为前缀，之后为正常的Elixir函数名。例如，
-这里演示了在Erlang中如何使用Elixir的`String`模块：
+Elixir会被编译成BEAM字节码（通过Erlang抽象格式）。这意味着Elixir和Erlang的代码可以互相调用而不需要添加其他任何绑定。
+Erlang代码中使用Elixir模块须要以`Elixir.`作为前缀，然后将Elixir的调用附在其后。
+例如，这里演示了在Erlang中如何使用Elixir的`String`模块：
 
 ```erlang
 -module(bstring).
@@ -789,34 +799,32 @@ downcase(Bin) ->
 ```
 
 ### 7.1 使用Rebar集成
-如果您在使用rebar，应将Elixir的git仓库引入并作为依赖添加：
+如果使用rebar，应当把Elixir的git仓库引入并作为依赖添加：
 ```
 https://github.com/elixir-lang/elixir.git
 ```
 
 Elixir的结构与Erlang的OTP类似，被分为不同的应用放在`lib`目录下，可以在[Elixir源码仓库][repo]中看到这种结构。
-由于rebar无法识别这种结构，因此需要在`rebar.config`中明确的配置所需要的Elixir app，例如：
+由于rebar无法识别这种结构，因此需要在`rebar.config`中明确的配置所需要的Elixir应用，例如：
 ```elixir
 {lib_dirs, [
   "deps/elixir/lib"
 ]}.
 ```
 
-这样就能直接从Erlang调用Elixir代码了，如果还需要编写Elixir代码，还应安装[自动编译Elixir的rebar插件][plugin]
+这样就能直接从Erlang调用Elixir代码了，如果需要编写Elixir代码，还应安装[自动编译Elixir的rebar插件][plugin]。
 
 [repo]: https://github.com/elixir-lang/elixir
 [plugin]: https://github.com/yrashk/rebar_elixir_plugin
 
 ### 7.2 手动集成
+如果不使用rebar，在已有Erlang软件中使用Elixir的最简单的方式是按照[入门指南][guide]中的方法安装Elixir，然后将`lib`添目录加到`ERL_LIBS`中。
 
-如果不使用rebar，在已有Erlang软件中使用Elixir的最简单的方式是用[入门指南][guide]
-中的方法安装Elixir，然后将`lib`添目录加到`ERL_LIBS`中。
-
-## 8 进阶阅读
-Erlang的官方文档网站有不错的编程[示例集][examples]，将它们重新用Elixir实现是一个不错的练习方法。
+## 8 扩展阅读
+Erlang的官方文档网站有不错的编程[示例集][examples]，把它们重新用Elixir实现一遍是不错的练习方法。
 [Erlang cookbook][cookbook]也提供了更多有用的代码示例。
 
-Elixir还提供[入门指南][guide]和[在线文档][doc]。
+还可以进一步阅读Elixir的[入门指南][guide]和[在线文档][doc]。
 
 
 [examples]: http://www.erlang.org/doc/programming_examples/users_guide.html
