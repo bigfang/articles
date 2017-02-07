@@ -746,7 +746,7 @@ Elixir的`cond`和Erlang的`if`有两个重要的区别：
   * `cond`允许左侧为任意表达式，而Erlang只允许Guard子句；
   * `cond`使用Elixir中的真值概念（除了`nil`和`false`皆为真值），而Erlang的`if`则严格的期望一个布尔值；
 
-Elixir同样提供了一个类似于命令式语言的`if`函数，用于检查一个子句是true还是false：
+Elixir同样提供了一个类似于命令式语言中`if`的功能，用于检查一个子句是true还是false：
 
 ```elixir
 if x > 10 do
