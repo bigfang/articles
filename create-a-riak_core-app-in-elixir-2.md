@@ -214,7 +214,7 @@ sync_spawn_command({Index,Node}, Msg, VMaster) ->
 事实上不是这样的，这些可能是老的注释或者是老的实现，最后要说的是，riak_core约定，
 vnode的名称带有`_master`后缀（**NoSlides.VNode_master**）
 
-现在，我们已经实现了**服务**和**vnode**，还需要把一切放在一起，为此，我们要从头开始...
+现在，我们已经实现了**Service**和**VNode**，还需要把所有的这些集中在一起，为此，我们要从头开始...
 
 ### 启动riak_core程序
 在OTP应用中，我们需要从一个实现了[Application](https://hexdocs.pm/elixir/Application.html)行为的模块开始。
@@ -328,7 +328,7 @@ Node c: 21 ( 32.8%) gpad_3@127.0.0.1
 abcc|abcc|abcc|abcc|abcc|abcc|abcc|abcc|abcc|abcc|abca|abba|abba|abba|abba|abba|
 ```
 
-正如你所看到的，环被分成64个分区，节点1拥有22个虚拟节点，剩下两个节点各拥有21个，你同样可以在**observer**中看到：
+正如你所看到的，环被分成64个分区，节点1拥有22个VNode，剩下两个节点各拥有21个，你同样可以在**observer**中看到：
 
 ![observer](imgs/observer.png)
 
@@ -356,3 +356,106 @@ iex(gpad_1@127.0.0.1)1> NoSlides.Service.ping
 例如，如果使用42，则节点3会作出响应。
 
 现在，我们有了ping，这样我们就可以创建一个基于内存的键值存储。
+
+
+### 内存中的KV
+
+现在我们已经了解如何连接服务和vnode，我们可以在服务模块上暴露`get`和`put`函数，来轻松创建一个内存键值存储，
+
+```elixir
+defmodule NoSlides.Service do
+
+ # ...
+
+ def put(k, v) do
+    idx = :riak_core_util.chash_key({"noslides", k})
+    pref_list = :riak_core_apl.get_primary_apl(idx, 1, NoSlides.Service)
+
+    [{index_node, _type}] = pref_list
+
+    :riak_core_vnode_master.command(index_node, {:put, {k, v}}, NoSlides.VNode_master)
+  end
+
+  def get(k) do
+    idx = :riak_core_util.chash_key({"noslides", k})
+    pref_list = :riak_core_apl.get_primary_apl(idx, 1, NoSlides.Service)
+
+    [{index_node, _type}] = pref_list
+
+    :riak_core_vnode_master.sync_command(index_node, {:get, k}, NoSlides.VNode_master)
+  end
+
+end
+```
+
+同样，在VNode中也要添加`get`和`put`的实现：
+```elixir
+defmodule NoSlides.VNode do
+
+  def init([partition]) do
+    {:ok, %{partition: partition, data: %{}}}
+  end
+
+  # ...
+
+  def handle_command({:put, {k, v}}, sender, state) do
+    Logger.debug("[put]: k: #{inspect k} v: #{inspect v}")
+    new_state = Map.update(state, :data, %{}, fn data -> Map.put(data, k, v) end)
+    {:noreply, new_state}
+  end
+
+  def handle_command({:get, k}, sender, state) do
+    Logger.debug("[get]: k: #{inspect k}")
+    {:reply, Map.get(state.data, k, nil), state}
+  end
+
+end
+```
+
+现在，你可以从不同的节点上进行获取和添加的操作了。
+
+重启所有节点，但不需要重新执行加入节点的操作，在节点1的控制台，执行下面的命令：
+```bash
+iex(gpad_1@127.0.0.1)1> NoSlides.Service.put(:k, 42)
+:ok
+iex(gpad_1@127.0.0.1)2> NoSlides.Service.get(:k)
+42
+```
+
+检查节点2上的日志：
+```bash
+iex(gpad_2@127.0.0.1)1>
+19:31:30.634 [debug] [put]: k: :k v: 42
+19:31:39.242 [debug] [get]: k: :k
+```
+
+同样，在节点3也可以取值
+```bash
+iex(gpad_3@127.0.0.1)1> NoSlides.Service.get(:k)
+42
+```
+
+我们拥有了一个内存中的键值存储，你可以添加很多不同类型数据作为值：
+```bash
+iex(gpad_1@127.0.0.1)9> NoSlides.Service.put("gpad", %{ blogs: ["riak_core I", "riak_core II"] })
+:ok
+iex(gpad_1@127.0.0.1)10> NoSlides.Service.get("gpad")
+%{blogs: ["riak_core I", "riak_core II"]}
+```
+
+同样也可以是键：
+```bash
+iex(gpad_1@127.0.0.1)11> NoSlides.Service.put(%{a: 1, b: 2}, "gpad")
+:ok
+iex(gpad_1@127.0.0.1)12> NoSlides.Service.get(%{a: 1, b: 2})
+"gpad"
+```
+
+这是一个简单的内存键值存储的开始，还有一个开放的问题：
+* 如果一个节点使用`:riak_core.leave`离开集群，会发生什么？
+* 如果某个节点崩溃，会发生什么？
+* 我们如何获取所有键的列表？
+
+我会在下一篇中尝试回答这些问题，如果你有任何问题或发现了什么错误，请不要犹豫，在下面留言吧。
+
+*作为译者，我的英文水平也很挫，如果读者发现任何问题，也请留言吧*
